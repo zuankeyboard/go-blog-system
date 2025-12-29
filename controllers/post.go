@@ -48,6 +48,13 @@ func CreatePost(c *gin.Context) {
 		return
 	}
 
+	// 关键修复：创建后，主动加载关联的 User 信息
+	// Preload("User") 会根据 post.UserID 查询 users 表，填充 User 字段
+	if err := config.DB.Preload("User").First(&post, post.ID).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "加载作者信息失败: " + err.Error()})
+		return
+	}
+
 	// 返回创建结果
 	c.JSON(http.StatusOK, gin.H{
 		"message": "文章创建成功",

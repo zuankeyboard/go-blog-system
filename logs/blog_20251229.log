@@ -1,0 +1,19 @@
+[36mINFO[0m[2025-12-29 11:19:31] 博客系统启动中...                                   
+[36mINFO[0m[2025-12-29 11:19:31] 博客系统启动成功，监听端口: 8080                          
+[36mINFO[0m[2025-12-29 11:19:46] 用户注册成功: testuser, id: 1                      
+[36mINFO[0m[2025-12-29 11:19:46] 请求成功                                          [36mip[0m="::1" [36mlatency[0m=61.622248ms [36mmethod[0m=POST [36mpath[0m=/api/register [36mstatus[0m=200
+[36mINFO[0m[2025-12-29 11:19:53] 用户登录成功: testuser, id: 1                      
+[36mINFO[0m[2025-12-29 11:19:53] 请求成功                                          [36mip[0m="::1" [36mlatency[0m=60.418933ms [36mmethod[0m=POST [36mpath[0m=/api/login [36mstatus[0m=200
+[36mINFO[0m[2025-12-29 11:20:11] 请求成功                                          [36mip[0m="::1" [36mlatency[0m="166.524µs" [36mmethod[0m=GET [36mpath[0m=/api/profile [36mstatus[0m=200
+[36mINFO[0m[2025-12-29 11:20:19] 文章创建成功: post_id: 1, user_id: 1               
+[36mINFO[0m[2025-12-29 11:20:19] 请求成功                                          [36mip[0m="::1" [36mlatency[0m=4.820616ms [36mmethod[0m=POST [36mpath[0m=/api/posts [36mstatus[0m=200
+[36mINFO[0m[2025-12-29 11:20:26] 请求成功                                          [36mip[0m="::1" [36mlatency[0m="429.67µs" [36mmethod[0m=GET [36mpath[0m=/api/posts [36mstatus[0m=200
+[36mINFO[0m[2025-12-29 11:20:31] 文章更新成功: post_id: 1, user_id: 1               
+[36mINFO[0m[2025-12-29 11:20:31] 请求成功                                          [36mip[0m="::1" [36mlatency[0m=4.543564ms [36mmethod[0m=PUT [36mpath[0m="/api/posts/:id" [36mstatus[0m=200
+[36mINFO[0m[2025-12-29 11:20:38] 评论创建成功: comment_id: 1, post_id: 1, user_id: 1 
+[36mINFO[0m[2025-12-29 11:20:38] 请求成功                                          [36mip[0m="::1" [36mlatency[0m=4.771707ms [36mmethod[0m=POST [36mpath[0m=/api/comments [36mstatus[0m=200
+[36mINFO[0m[2025-12-29 11:20:42] 请求成功                                          [36mip[0m="::1" [36mlatency[0m="698.157µs" [36mmethod[0m=GET [36mpath[0m=/api/comments [36mstatus[0m=200
+[33mWARN[0m[2025-12-29 11:20:53] 文章不存在: id=2, ip: ::1                         
+[33mWARN[0m[2025-12-29 11:20:53] 客户端错误                                         [33mip[0m="::1" [33mlatency[0m="333.617µs" [33mmethod[0m=GET [33mpath[0m=/api/comments [33mstatus[0m=404
+[36mINFO[0m[2025-12-29 11:20:58] 文章删除成功: post_id: 1, user_id: 1               
+[36mINFO[0m[2025-12-29 11:20:58] 请求成功                                          [36mip[0m="::1" [36mlatency[0m=4.122652ms [36mmethod[0m=DELETE [36mpath[0m="/api/posts/:id" [36mstatus[0m=200

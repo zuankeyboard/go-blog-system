@@ -4,39 +4,65 @@ import (
 	"go-blog-system/config"
 	"go-blog-system/controllers"
 	"go-blog-system/middleware"
-	"net/http"
+	"go-blog-system/utils"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	// 初始化数据库
-	config.InitDB()
+	// 1. 初始化日志
+	utils.InitLogger()
+	utils.Log.Info("博客系统启动中...")
 
-	// 创建Gin引擎
-	r := gin.Default()
+	// 2. 初始化配置
+	appCfg := config.NewDefaultConfig()
 
-	// 公开路由（无需认证）
+	// 3. 初始化数据库
+	config.InitDB(appCfg)
+
+	// 4. Gin引擎配置
+	r := gin.New()
+	r.Use(utils.GinLogger()) // 自定义日志中间件
+	r.Use(gin.Recovery())    // 异常恢复
+
+	// 跨域中间件
+	r.Use(func(c *gin.Context) {
+		c.Header("Access-Control-Allow-Origin", "*")
+		c.Header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS")
+		c.Header("Access-Control-Allow-Headers", "Authorization,Content-Type")
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+		c.Next()
+	})
+
+	// 5. 路由配置
 	publicGroup := r.Group("/api")
 	{
-		publicGroup.POST("/register", controllers.Register) // 注册
-		publicGroup.POST("/login", controllers.Login)       // 登录
-		// 文章公开接口
-		publicGroup.GET("/posts", controllers.GetPosts)    // 获取所有文章
-		publicGroup.GET("/posts/:id", controllers.GetPost) // 获取单篇文章
-		// 修复：评论路由改为查询参数方式，避免冲突
-		publicGroup.GET("/comments", controllers.GetComments) // 获取文章评论列表（?post_id=1）
+		// 用户接口
+		publicGroup.POST("/register", controllers.Register)
+		publicGroup.POST("/login", func(c *gin.Context) {
+			controllers.Login(c, appCfg.JWTSecretKey, appCfg.TokenExpire)
+		})
+
+		// 文章接口
+		publicGroup.GET("/posts", controllers.GetPosts)
+		publicGroup.GET("/posts/:id", controllers.GetPost)
+
+		// 评论接口
+		publicGroup.GET("/comments", controllers.GetComments)
 	}
 
 	// 私有路由（需要JWT认证）
 	privateGroup := r.Group("/api")
-	privateGroup.Use(middleware.JWTAuthMiddleware()) // 应用JWT中间件
+	privateGroup.Use(middleware.JWTAuthMiddleware(appCfg.JWTSecretKey))
 	{
 		// 个人信息
 		privateGroup.GET("/profile", func(c *gin.Context) {
 			userID := c.GetInt("user_id")
 			username := c.GetString("username")
-			c.JSON(http.StatusOK, gin.H{
+			c.JSON(200, gin.H{
 				"message": "获取个人信息成功",
 				"data": gin.H{
 					"user_id":  userID,
@@ -45,17 +71,19 @@ func main() {
 			})
 		})
 
-		// 文章管理接口
-		privateGroup.POST("/posts", controllers.CreatePost)       // 创建文章
-		privateGroup.PUT("/posts/:id", controllers.UpdatePost)    // 更新文章
-		privateGroup.DELETE("/posts/:id", controllers.DeletePost) // 删除文章
+		// 文章接口
+		privateGroup.POST("/posts", controllers.CreatePost)
+		privateGroup.PUT("/posts/:id", controllers.UpdatePost)
+		privateGroup.DELETE("/posts/:id", controllers.DeletePost)
 
-		// 修复：评论创建路由改为查询参数方式
-		privateGroup.POST("/comments", controllers.CreateComment) // 发表评论（?post_id=1）
+		// 评论接口
+		privateGroup.POST("/comments", controllers.CreateComment)
 	}
 
-	// 启动服务（监听8080端口）
+	// 6. 启动服务
+	utils.Log.Info("博客系统启动成功，监听端口: 8080")
 	if err := r.Run(":8080"); err != nil {
+		utils.Log.Fatalf("服务启动失败: %v", err)
 		panic("服务启动失败: " + err.Error())
 	}
 }

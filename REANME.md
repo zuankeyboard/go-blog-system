@@ -103,3 +103,16 @@ curl -X PUT http://localhost:8080/api/posts/1 \
 curl -X DELETE http://localhost:8080/api/posts/1 \
 -H "Authorization: Bearer <你的Token>"
 ```
+1. 发表评论（查询参数方式）
+```bash
+curl -X POST http://localhost:8080/api/comments?post_id=1 \
+-H "Authorization: Bearer <你的Token>" \
+-H "Content-Type: application/json" \
+-d '{
+	"content": "这篇博客写得很棒！"
+}'
+```
+2. 获取文章评论列表
+```bash
+curl -X GET http://localhost:8080/api/comments?post_id=1
+```

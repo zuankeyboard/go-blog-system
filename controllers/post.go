@@ -55,6 +55,12 @@ func CreatePost(c *gin.Context) {
 		return
 	}
 
+	// 转换时间为本地时区（可选，修复之前的时间问题）
+	post.CreatedAt = post.CreatedAt.Local()
+	post.UpdatedAt = post.UpdatedAt.Local()
+	post.User.CreatedAt = post.User.CreatedAt.Local()
+	post.User.UpdatedAt = post.User.UpdatedAt.Local()
+
 	// 返回创建结果
 	c.JSON(http.StatusOK, gin.H{
 		"message": "文章创建成功",

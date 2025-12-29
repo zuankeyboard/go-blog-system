@@ -21,9 +21,11 @@ func main() {
 	{
 		publicGroup.POST("/register", controllers.Register) // 注册
 		publicGroup.POST("/login", controllers.Login)       // 登录
-		// 文章公开读取接口
+		// 文章公开接口
 		publicGroup.GET("/posts", controllers.GetPosts)    // 获取所有文章
 		publicGroup.GET("/posts/:id", controllers.GetPost) // 获取单篇文章
+		// 修复：评论路由改为查询参数方式，避免冲突
+		publicGroup.GET("/comments", controllers.GetComments) // 获取文章评论列表（?post_id=1）
 	}
 
 	// 私有路由（需要JWT认证）
@@ -43,10 +45,13 @@ func main() {
 			})
 		})
 
-		// 文章管理接口（需认证+权限）
+		// 文章管理接口
 		privateGroup.POST("/posts", controllers.CreatePost)       // 创建文章
 		privateGroup.PUT("/posts/:id", controllers.UpdatePost)    // 更新文章
 		privateGroup.DELETE("/posts/:id", controllers.DeletePost) // 删除文章
+
+		// 修复：评论创建路由改为查询参数方式
+		privateGroup.POST("/comments", controllers.CreateComment) // 发表评论（?post_id=1）
 	}
 
 	// 启动服务（监听8080端口）
